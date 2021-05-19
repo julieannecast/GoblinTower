@@ -70,7 +70,7 @@ public class PlayerBehavior : MonoBehaviour
     public void SetSkinDegree()
     {
         Vector3 locRot = transform.TransformDirection(lastDirection);
-        skin.rotation = Quaternion.Slerp(skin.rotation, Quaternion.LookRotation(new Vector3(-locRot.z, 0, locRot.x)), 15f * Time.deltaTime);
+        //skin.rotation = Quaternion.Slerp(skin.rotation, Quaternion.LookRotation(new Vector3(-locRot.z, 0, locRot.x)), 15f * Time.deltaTime);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -102,7 +102,7 @@ public class PlayerBehavior : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, (playerHeight + 0.3f)))
         {
-            Debug.Log(hit.collider.gameObject.ToString());
+            //Debug.Log(hit.collider.gameObject.ToString());
             return true;
         }
 
