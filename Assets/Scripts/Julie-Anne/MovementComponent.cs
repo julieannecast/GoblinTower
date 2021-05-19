@@ -8,6 +8,8 @@ public class MovementComponent : MonoBehaviour
 {
     [SerializeField] InputAction _move;
     [SerializeField] CameraControl _cam;
+    private CourbeBezier _courbe;
+    private float _tempsMouvement;
     private Vector2 _currentMove;
     private bool _isMoving;
     private Vector3 _destination;
@@ -33,11 +35,15 @@ public class MovementComponent : MonoBehaviour
     {
         if (_isMoving) 
         {
-            transform.position = Vector3.MoveTowards(transform.position, _destination, Speed * Time.deltaTime);
-            if (Vector3.Distance(transform.position, _destination) < Speed * Time.deltaTime)
+            _tempsMouvement += Time.deltaTime * Speed;
+            if (_tempsMouvement >= 1.0f)
             {
                 transform.position = _destination;
                 _isMoving = false;
+            }
+            else
+            {
+                transform.position = _courbe.Evaluer(_tempsMouvement);
             }
         }        
         else if(_currentMove.magnitude > 0)
@@ -50,6 +56,12 @@ public class MovementComponent : MonoBehaviour
             {
                 _destination = destination;
                 _isMoving = true;
+                var distance = _destination - transform.position;
+                var milieu = transform.position + distance / 2;
+                var sommetY = Math.Max(transform.position.y, _destination.y) + 0.5f;
+                var sommet = new Vector3(milieu.x,sommetY,milieu.z);
+                _courbe = new CourbeBezier(transform.position, sommet, _destination);
+                _tempsMouvement = 0;
             }
             _currentMove = new Vector2();
         }
