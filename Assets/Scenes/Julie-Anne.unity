@@ -1186,24 +1186,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7424ffd0da21a204cb4cf7cc38979308, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move:
+  _move:
     m_Name: Move
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 871fa0cd-f6bb-46a3-8fe2-12e87a2b7069
+    m_Id: fb85269e-6251-4eab-b30d-eb5e7f7a8768
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 2D Vector
-      m_Id: 1d2b2481-a3e9-4e8e-9c0c-6e102894a979
+      m_Id: eea6618b-aa8c-4acf-9f0b-25dde0fdf13d
       m_Path: 2DVector
-      m_Interactions: 
+      m_Interactions: Tap
       m_Processors: 
       m_Groups: 
       m_Action: Move
       m_Flags: 4
     - m_Name: up
-      m_Id: ce45a954-c2e3-4b4f-b87d-03706880f6b3
+      m_Id: ce75c0e2-bba0-4dbe-8732-ed7b6e560d6c
       m_Path: <Keyboard>/w
       m_Interactions: 
       m_Processors: 
@@ -1211,7 +1211,7 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     - m_Name: down
-      m_Id: 26620c08-f16d-4721-a97c-b1927120a292
+      m_Id: a0e70a34-af98-4c0b-b565-8d17125a7329
       m_Path: <Keyboard>/s
       m_Interactions: 
       m_Processors: 
@@ -1219,7 +1219,7 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     - m_Name: left
-      m_Id: 1a6b923d-53d3-456b-a456-2bc1a3268f55
+      m_Id: 611b7572-3725-48f3-8612-13d9e61ac376
       m_Path: <Keyboard>/a
       m_Interactions: 
       m_Processors: 
@@ -1227,11 +1227,11 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     - m_Name: right
-      m_Id: 553e8155-4ff7-4bce-ba46-631c661efdff
+      m_Id: d59fd57b-b0b2-4188-93de-414e631f5ac4
       m_Path: <Keyboard>/d
       m_Interactions: 
       m_Processors: 
       m_Groups: 
       m_Action: Move
       m_Flags: 8
-  cam: {fileID: 963194229}
+  _cam: {fileID: 963194229}

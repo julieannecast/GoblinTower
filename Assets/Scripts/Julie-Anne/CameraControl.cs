@@ -8,6 +8,11 @@ public class CameraControl : MonoBehaviour
     [SerializeField] InputAction moveClockwise;
     [SerializeField] InputAction moveCounterclockwise;
     public int coin { get; private set; }
+    private bool _isRotating;
+    private float _angleRestant;
+    private int _delta;
+    private bool _coinUpdated;
+    private const float Speed = 180f;
 
     // Start is called before the first frame update
     void Start()
@@ -31,10 +36,35 @@ public class CameraControl : MonoBehaviour
 
     private void RotateAround(int delta)
     {
-        coin = (4 + ((coin + delta) % 4)) % 4;
-        transform.RotateAround(new Vector3(), Vector3.up, delta * 90);
+        if (!_isRotating)
+        {
+            _coinUpdated = false;
+            _angleRestant = 90;
+            _delta = delta;
+            _isRotating = true;
+        }
     }
 
+    private void Update()
+    {
+        if(_isRotating)
+        {
+            _angleRestant -= Speed * Time.deltaTime;
+            if (_angleRestant > 0)
+            {
+                if(_angleRestant < 45 && !_coinUpdated)
+                {
+                    coin = (4 + ((coin + _delta) % 4)) % 4;
+                    _coinUpdated = true;
+                }
+                transform.RotateAround(new Vector3(), Vector3.up, _delta * Mathf.Min(_angleRestant, Speed * Time.deltaTime));
+            }
+            else
+            {
+                _isRotating = false;
+            }
+        }
+    }
     private void OnDestroy()
     {
         moveClockwise.Disable();
