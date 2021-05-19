@@ -1,101 +1,120 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MovementComponent : MonoBehaviour
 {
-    [SerializeField] InputAction move;
-    [SerializeField] CameraControl cam;
-    private Vector2 currentMove;
-    private float moveCooldown;
+    [SerializeField] InputAction _move;
+    [SerializeField] CameraControl _cam;
+    private CourbeBezier _courbe;
+    private float _tempsMouvement;
+    private Vector2 _currentMove;
+    private bool _isMoving;
+    private Vector3 _destination;
     const float top = 50;
-
+    private const float Speed = 2.0f;
 
     void Awake()
     {
         SetCallbacks();
-        move.Enable();
+        _move.Enable();
     }
 
     private void SetCallbacks()
     {
-        move.performed += ctx =>
+        _move.started += ctx =>
         {
-            currentMove = ctx.ReadValue<Vector2>();
-        };
-        move.canceled += ctx =>
-        {
-            currentMove = new Vector3();
+            if(!_isMoving)
+                _currentMove = ctx.ReadValue<Vector2>();
         };
     }
 
     private void Update()
     {
-        if (moveCooldown > 0)
+        if (_isMoving) 
         {
-            moveCooldown -= Time.fixedDeltaTime;
-        }
-        else if(currentMove.magnitude > 0)
+            _tempsMouvement += Time.deltaTime * Speed;
+            if (_tempsMouvement >= 1.0f)
+            {
+                transform.position = _destination;
+                _isMoving = false;
+            }
+            else
+            {
+                transform.position = _courbe.Evaluer(_tempsMouvement);
+            }
+        }        
+        else if(_currentMove.magnitude > 0)
         {
-            var rotation = Quaternion.Euler(0, cam.coin * 90, 0);
-            var direction = rotation * new Vector3(currentMove.x, 0, currentMove.y);
-            //var angle = Vector3.SignedAngle(direction, Vector3.forward, Vector3.up);
-            Debug.Log(direction);
-            //Debug.Log(angle);
+            var rotation = Quaternion.Euler(0, _cam.coin * 90, 0);
+            var direction = rotation * new Vector3(_currentMove.x, 0, _currentMove.y);
             transform.rotation = Quaternion.LookRotation(-direction);
             var destination = transform.position + direction;
             if(DeplacementValide(transform.position, ref destination))
             {
-                transform.position = destination;
-                moveCooldown = 0.2f;
-            } 
+                _destination = destination;
+                _isMoving = true;
+                var distance = _destination - transform.position;
+                var milieu = transform.position + distance / 2;
+                var sommetY = Math.Max(transform.position.y, _destination.y) + 0.5f;
+                var sommet = new Vector3(milieu.x,sommetY,milieu.z);
+                _courbe = new CourbeBezier(transform.position, sommet, _destination);
+                _tempsMouvement = 0;
+            }
+            _currentMove = new Vector2();
         }
     }
 
     private void OnDestroy()
     {
-        move.Disable();
+        _move.Disable();
     }
 
     private bool DeplacementValide(Vector3 origine, ref Vector3 destination)
     {
-        //le nom de variable est une joke, pls pas trop me taper dessus
-        var charles = new Ray(new Vector3(destination.x, top, destination.z), Vector3.down);
-        var hauteur = GetDifferenceHauteur(origine, destination);
+        var hauteurs = GetTabDifferenceHauteur(origine, destination);
 
-        if (hauteur == 0 || hauteur == 1)
+        foreach (var hauteur in hauteurs)
         {
-            destination.y += hauteur;
-            return true;
-        }
-        else if (hauteur < 0)
-        {
-            var direction = destination - origine;
-            var hauteurLoin = GetDifferenceHauteur(origine, origine + direction * 2);
-            if(hauteurLoin == 0)
-            {
-                destination = origine + direction * 2;
-                return true;
-            }
-            else
+            if (hauteur == 0 || hauteur == 1)
             {
                 destination.y += hauteur;
                 return true;
             }
+            else if (hauteur < 0)
+            {
+                var direction = destination - origine;
+                var hauteursLoin = GetTabDifferenceHauteur(origine, origine + direction * 2);
+                foreach (var hauteurLoin in hauteursLoin)
+                {
+                    if (hauteurLoin == 0)
+                    {
+                        destination = origine + direction * 2;
+                        return true;
+                    }
+                    else
+                    {
+                        destination.y += hauteur;
+                        return true;
+                    }
+                }
+            }
         }
-        return false;    
+        return false;
     }
 
     //Trouver la différence de hauteur entre la position du joueur et la prochaine position
-    private int GetDifferenceHauteur(Vector3 origine, Vector3 destination)
+    private int[] GetTabDifferenceHauteur(Vector3 origine, Vector3 destination)
     {
-        var charles = new Ray(new Vector3(destination.x, top, destination.z), Vector3.down);
-        if(Physics.Raycast(charles, out var hit))
-        {
-            return Mathf.RoundToInt(hit.point.y - origine.y);
+        var hits = Physics.RaycastAll(new Vector3(destination.x, top, destination.z), Vector3.down);
+        int[] differences = new int[hits.Length];
+        for(int i = 0; i < differences.Length; i++) 
+        { 
+            differences[i] = Mathf.RoundToInt(hits[i].point.y - origine.y);
         }
-        //Ne devrait pas arriver
-        return int.MinValue;        
+        Array.Sort(differences, (a, b) => b.CompareTo(a));
+        return differences;    
     }
 }
