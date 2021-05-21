@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Animator))]
 public class MovementComponent : MonoBehaviour
 {
     [SerializeField] InputAction _move;
@@ -15,10 +16,12 @@ public class MovementComponent : MonoBehaviour
     private Vector3 _destination;
     const float top = 50;
     private const float Speed = 2.0f;
+    private Animator _anim;
 
     void Awake()
     {
         SetCallbacks();
+        _anim = GetComponent<Animator>();
         _move.Enable();
     }
 
@@ -26,6 +29,7 @@ public class MovementComponent : MonoBehaviour
     {
         _move.started += ctx =>
         {
+            Debug.Log("pressed");
             if(!_isMoving)
                 _currentMove = ctx.ReadValue<Vector2>();
         };
@@ -40,6 +44,7 @@ public class MovementComponent : MonoBehaviour
             {
                 transform.position = _destination;
                 _isMoving = false;
+                _anim.SetBool("isMoving", false);
             }
             else
             {
@@ -56,6 +61,7 @@ public class MovementComponent : MonoBehaviour
             {
                 _destination = destination;
                 _isMoving = true;
+                _anim.SetBool("isMoving", true);
                 var distance = _destination - transform.position;
                 var milieu = transform.position + distance / 2;
                 var sommetY = Math.Max(transform.position.y, _destination.y) + 0.5f;
