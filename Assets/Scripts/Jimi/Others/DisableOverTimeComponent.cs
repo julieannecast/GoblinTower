@@ -6,11 +6,16 @@ using System.Collections.Generic;
 
 public class DisableOverTimeComponent : MonoBehaviour
 {
-    [SerializeField] private float timeBeforeDisable = 10f;
+    public float timeBeforeDisable = 10f;
 
     private void OnEnable()
     {
         StartCoroutine(Disable());
+    }
+
+    public void Cancel()
+    {
+        StopCoroutine(Disable());
     }
 
     IEnumerator Disable()

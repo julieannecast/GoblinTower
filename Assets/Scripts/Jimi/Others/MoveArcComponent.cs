@@ -2,45 +2,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class MoveArcComponent : MonoBehaviour
 {
-    [SerializeField] Transform target;
+    [SerializeField] CanonBehavior canon;
+    [SerializeField] float bulletSpeed;
 
+    private float flightDuration;
     private Vector3 targetPosition;
-    public float privateRotation;
-    public float dragDown;
+    private CourbeBezier curve;
 
+    private Rigidbody rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        flightDuration = 0;
+    }
 
     private void OnEnable()
     {
-        targetPosition = target.position;
-        StartCoroutine(CannonballMovement());
+        targetPosition = canon.targetPosition;
+        curve = canon.curve;
+        flightDuration = 0;
+        StartCoroutine(ArcMovement());
     }
 
-    IEnumerator CannonballMovement()
+    private void OnCollisionEnter(Collision collision)
     {
-        yield return new WaitForSeconds(0f);
-
-        float target_Distance = Vector3.Distance(transform.position, targetPosition);
-
-        float projectile_Velocity = target_Distance / (Mathf.Sin(2 * privateRotation * Mathf.Deg2Rad) / dragDown);
-
-        float Vx = Mathf.Sqrt(projectile_Velocity) * Mathf.Cos(privateRotation * Mathf.Deg2Rad);
-        float Vy = Mathf.Sqrt(projectile_Velocity) * Mathf.Sin(privateRotation * Mathf.Deg2Rad);
-
-        float flightDuration = target_Distance / Vx;
-
-        transform.rotation = Quaternion.LookRotation(targetPosition - transform.position);
-
-        float elapse_time = 0;
-
-        while (elapse_time < flightDuration)
+        if (collision.gameObject.tag != "Bullet")
         {
-            transform.Translate(0, (Vy - (dragDown * elapse_time)) * Time.deltaTime, Vx * Time.deltaTime);
+            StopAllCoroutines();
+            rb.useGravity = true;
+        }
+    }
 
-            elapse_time += Time.deltaTime;
+    IEnumerator ArcMovement()
+    {
+        yield return null;
+        Quaternion startRotation = transform.rotation;
 
+        float rx = Random.Range(0, 360);
+        float ry = Random.Range(0, 360);
+        float rz = Random.Range(0, 360);
+
+        while (flightDuration < 1f)
+        {
+            transform.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(new Vector3(rx, ry, rz)), flightDuration);
+            transform.position = curve.Evaluer(flightDuration);
+            flightDuration += Time.deltaTime * bulletSpeed;
             yield return null;
         }
+
+        transform.position = targetPosition;
+        rb.useGravity = true;
     }
 }

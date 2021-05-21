@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletBehavior : MonoBehaviour, IPoolable
+[RequireComponent(typeof(MoveArcComponent))]
+public class SimpleBulletBehavior : MonoBehaviour, IPoolable
 {
     public ObjectPoolComponent associatedPool { get; set; }
+
+    private MoveArcComponent moveArcComponent;
 
     private void OnDisable()
     {

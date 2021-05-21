@@ -9,19 +9,29 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField] ObjectPoolComponent bulletObjectPool;
     [SerializeField] Transform target;
     [SerializeField] float aggroRange;
+    [SerializeField] float barrelRecoil;
+    [SerializeField] Transform barrel;
 
     private bool isShooting;
+    private Vector3 barrelStartPosition;
+    private float recoil;
 
     private void Start()
     {
+        if (barrel) barrelStartPosition = barrel.position;
         StartCoroutine(Spawn());
     }
 
     private void Update()
     {
         transform.LookAt(target);
-
         isShooting = TargetIsClose(target.position);
+
+        if (barrel)
+        {
+            recoil = Mathf.Max(0, recoil - Time.deltaTime * (1 / cooldown));
+            barrel.position = barrelStartPosition + barrel.up * -recoil;
+        }
     }
 
     IEnumerator Spawn() 
@@ -34,6 +44,7 @@ public class EnemyBehavior : MonoBehaviour
                 {
                     var recycledBullet = bulletObjectPool.GetObject();
                     ResetBullet(recycledBullet);
+                    recoil = barrelRecoil;
                 } catch { }
             }
 
