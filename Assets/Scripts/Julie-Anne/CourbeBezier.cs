@@ -26,5 +26,14 @@ public struct CourbeBezier
 
         return a * pZero + b * pUn + c * pDeux;
     }
+
+    public static Vector3 Evaluer(Vector3 p1, Vector3 p2, Vector3 p3, float t)
+    {
+        float a = (1 - t) * (1 - t);
+        float b = 2 * (1 - t) * t;
+        float c = t * t;
+
+        return a * p1 + b * p2 + c * p3;
+    }
 }
 
