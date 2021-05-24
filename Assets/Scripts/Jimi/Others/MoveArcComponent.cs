@@ -1,16 +1,18 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+/*
+ * Note: Une courbe de bezier doit être assigné 'SetCurve' 
+ *       avant le début de la coroutine 'ArcMovement'.
+ */
 
 [RequireComponent(typeof(Rigidbody))]
 public class MoveArcComponent : MonoBehaviour
 {
-    [SerializeField] CanonBehavior canon;
     [SerializeField] float bulletSpeed;
 
-    private float flightDuration;
-    private Vector3 targetPosition;
     private CourbeBezier curve;
+    private float flightDuration;
 
     private Rigidbody rb;
 
@@ -22,8 +24,6 @@ public class MoveArcComponent : MonoBehaviour
 
     private void OnEnable()
     {
-        targetPosition = canon.targetPosition;
-        curve = canon.curve;
         flightDuration = 0;
         StartCoroutine(ArcMovement());
     }
@@ -54,7 +54,11 @@ public class MoveArcComponent : MonoBehaviour
             yield return null;
         }
 
-        transform.position = targetPosition;
         rb.useGravity = true;
+    }
+
+    public void SetCurve(CourbeBezier curve)
+    {
+        this.curve = curve;
     }
 }

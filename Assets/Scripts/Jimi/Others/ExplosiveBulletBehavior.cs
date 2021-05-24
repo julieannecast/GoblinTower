@@ -1,8 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MoveTowardComponent))]
+[RequireComponent(typeof(SpiningComponent))]
 [RequireComponent(typeof(ScalePulsateComponent))]
 [RequireComponent(typeof(DisableOverTimeComponent))]
 public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
@@ -10,44 +10,49 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
     public ObjectPoolComponent associatedPool { get; set; }
 
     private MoveTowardComponent moveTowardComponent;
+    private SpiningComponent spiningComponent;
     private ScalePulsateComponent scalePulsateComponent;
     private DisableOverTimeComponent disableOverTimeComponent;
 
     [SerializeField] float distanceMinToDetonate;
-    [SerializeField] float timeBeforeExplosion;
+    [SerializeField] float timeBeforeExplosion; //Secondes
     private bool detonated;
-    private ParticleSystem particleSys;
+    [SerializeField] ParticleSystem particleSys;
 
-    [SerializeField] GameObject skin;
+    [SerializeField] GameObject projectilePieces;
 
     private void Awake()
     {
         moveTowardComponent = GetComponent<MoveTowardComponent>();
+        spiningComponent = GetComponent<SpiningComponent>();
         scalePulsateComponent = GetComponent<ScalePulsateComponent>();
         disableOverTimeComponent = GetComponent<DisableOverTimeComponent>();
-        particleSys = GetComponent<ParticleSystem>();
     }
 
     private void OnEnable()
     {
         detonated = false;
-        skin.SetActive(true);
+        projectilePieces.SetActive(true);
     }
 
     private void OnDisable()
     {
+        disableOverTimeComponent.Cancel();
         associatedPool.PutObject(gameObject);
     }
 
     private void Update()
     {
-        if (!detonated && Vector3.Distance(transform.position, moveTowardComponent.targetPosition) <= distanceMinToDetonate)
+        if (!detonated && CloseEnoughToDetonate())
         {
             detonated = true;
             scalePulsateComponent.StartPulsing();
             StartCoroutine(TicTac());
         }
     }
+
+    private bool CloseEnoughToDetonate() =>
+        moveTowardComponent.DistanceFromTarget() <= distanceMinToDetonate;
 
     private IEnumerator TicTac()
     {
@@ -59,16 +64,22 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
             yield return null;
         }
 
-        particleSys.Play();
-        skin.SetActive(false);
+        Explode();
+
         yield return new WaitForSecondsRealtime(particleSys.main.duration);
 
-        Explode();
+        Die();
     }
 
     private void Explode()
     {
-        disableOverTimeComponent.Cancel();
+        spiningComponent.StopSpining();
+        particleSys.Play();
+        projectilePieces.SetActive(false);
+    }
+
+    private void Die()
+    {
         gameObject.SetActive(false);
     }
 }

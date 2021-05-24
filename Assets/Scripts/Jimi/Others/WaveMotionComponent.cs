@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WaveMotionComponent : MonoBehaviour
 {
@@ -11,7 +9,7 @@ public class WaveMotionComponent : MonoBehaviour
     float rad;
     private void Update()
     {
-        transform.Translate(0, (amplitude * Mathf.Sin(rad)), 0, space);
+        transform.Translate(0, (amplitude * Mathf.Sin(rad)) * Time.deltaTime, 0, space);
         rad += radStepPerFrame * Time.deltaTime;
     }
 }

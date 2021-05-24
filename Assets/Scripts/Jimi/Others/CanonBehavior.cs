@@ -1,152 +1,192 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CanonBehavior : MonoBehaviour
 {
     [SerializeField] Transform target;
     [SerializeField] Vector3 offset;
-    [SerializeField] float aggroRange; //Distance à laquelle le canon peut voir le target
-    [SerializeField] Transform barrel;
-    [SerializeField] float barrelMaxRecoil; //Quantité de recoil lors d'un tir
-    [SerializeField] Transform exit; //Point de sortie des projectiles
-    [SerializeField] float cooldown; //Temps entre chaque tir
+    [SerializeField] float aggroRange;
     [SerializeField] float rotationSpeed;
-    [SerializeField] ObjectPoolComponent bulletObjectPool;
+    [SerializeField] bool lockRotation;
+    [SerializeField] ObjectEmitterComponent emitter;
 
-    private bool isShooting;
-    private Vector3 barrelStartPosition;
-    private float currentRecoil;
+    private Vector3 targetPosition;
 
-    public CourbeBezier curve; //Aussi une référence pour les projectiles
-    [SerializeField] float curveMaxHeight; //Hauteur maximum de la trajectoire d'un projectile selon le target
-
-    public Vector3 targetPosition; //Aussi une référence pour les projectiles
+    private CourbeBezier curve;
+    [SerializeField] float curveMaxHeight;
 
     private LineRenderer lineRenderer;
-    private int pointsCount = 10;
+    private const int PointsCount = 10;
     private Vector3[] points;
+
+    [SerializeField] new ParticleSystem particleSystem;
+    private Vector3 particleSystemPosition;
+    private Quaternion particleSystemRotation;
+
+    private bool isShooting;
+    private bool isReady;
+
+    private const float TrajectoryIndicatorFadeInSpeed = 0.5f;
+    private const float TrajectoryIndicatorFadeOutSpeed = 0.5f;
 
     private void Start()
     {
-        barrelStartPosition = barrel.position;
-
-        points = new Vector3[pointsCount];
+        points = new Vector3[PointsCount];
         lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = pointsCount;
+        lineRenderer.positionCount = PointsCount;
+
+        isReady = true;
 
         StartCoroutine(Shoot());
     }
 
     private void Update()
     {
-        isShooting = TargetIsCloseEnough(target.position);
-
-        currentRecoil = Mathf.Max(0, currentRecoil - Time.deltaTime * (1 / cooldown));
-        barrel.position = barrelStartPosition + barrel.up * -currentRecoil;
+        UpdateParticleSystem();
+        CheckTargetDistance(target.position, out isShooting);
     }
 
     IEnumerator Shoot()
     {
         while (true)
         {
-            if (isShooting)
+            if (isShooting && isReady)
             {
+                isReady = false;
+
                 SetTargetPosition();
-                CalculateTrajectory();
-                SetTrajectoryIndicator();
-                SetTrajectoryIndicatorColor();
+                StartCoroutine(TrajectoryIndicatorFadeIn());
 
                 //Le canon se tourne en direction du nouveau target
                 float time = 0;
-                while (time < 1f)
+                while (time < 0.9f)
                 {
                     LookTarget();
-
-                    time += Time.deltaTime * rotationSpeed;
+                    SetTrajectoryIndicator();
+                    time = Mathf.Lerp(time, 1f, rotationSpeed * Time.deltaTime);
                     yield return null;
                 }
 
-                //On récupère un projectile dans le pool
-                try
-                {
-                    var recycledBullet = bulletObjectPool.GetObject();
-                    ResetBullet(recycledBullet);
-                    currentRecoil = barrelMaxRecoil;
-                }
-                catch { }
+                SetTrajectoryCurve();
+
+                emitter.CanEmit(true); //Maintenant l'émetteur peut émettre
             }
 
-            yield return StartCoroutine(TrajectoryIndicatorFadeOut());
-
-            yield return new WaitForSecondsRealtime(cooldown);
+            yield return null;
         }
     }
 
-    private bool TargetIsCloseEnough(Vector3 target) =>
-        Vector3.Distance(transform.position, target) <= aggroRange;
-
-    private void SetTargetPosition()
+    //Fonction appelée après l'émission d'un projectile
+    public void PostEmit(GameObject recycledObject)
     {
-        targetPosition = target.position + offset;
+        recycledObject.GetComponent<MoveArcComponent>().SetCurve(curve);
+
+        ResetParticleSystem();
+        particleSystem.Play();
+
+        StartCoroutine(TrajectoryIndicatorFadeOut());
+        emitter.CanEmit(false);
     }
 
-    private void ResetBullet(GameObject recycledBullet)
+    private void ResetParticleSystem()
     {
-        recycledBullet.transform.position = exit.position;
-        recycledBullet.transform.rotation = exit.rotation;
-        recycledBullet.SetActive(true);
+        particleSystemPosition = emitter.exitPoint.position;
+        particleSystemRotation = emitter.exitPoint.rotation;
     }
 
-    private void CalculateTrajectory()
+    private void UpdateParticleSystem()
     {
-        Vector3 m = Vector3.Lerp(targetPosition, exit.position, 0.5f);
-        float y = Mathf.Max(exit.position.y, targetPosition.y) + curveMaxHeight;
+        particleSystem.transform.position = particleSystemPosition;
+        particleSystem.transform.rotation = particleSystemRotation;
+    }
+
+    private void GetTrajectoryReferencePoints(out Vector3 a, out Vector3 b, out Vector3 c)
+    {
+        Vector3 m = Vector3.Lerp(targetPosition, emitter.exitPoint.position, 0.5f);
+        float y = Mathf.Max(emitter.exitPoint.position.y, targetPosition.y) + curveMaxHeight;
         Vector3 point = new Vector3(m.x, y, m.z);
-        curve = new CourbeBezier(exit.position, point, targetPosition);
+        a = emitter.exitPoint.position;
+        b = point;
+        c = targetPosition;
+    }
+
+    private void SetTrajectoryCurve()
+    {
+        GetTrajectoryReferencePoints(out Vector3 a, out Vector3 b, out Vector3 c);
+        curve = new CourbeBezier(a, b, c);
     }
 
     private void SetTrajectoryIndicator()
     {
+        GetTrajectoryReferencePoints(out Vector3 a, out Vector3 b, out Vector3 c);
+
         float time;
-        for (int i = 1; i < pointsCount + 1; i++)
+        for (int i = 1; i < PointsCount + 1; i++)
         {
-            time = i / (float)pointsCount;
-            points[i - 1] = curve.Evaluer(time);
+            time = i / (float)PointsCount;
+            points[i - 1] = CourbeBezier.Evaluer(a, b, c, time); 
         }
 
         lineRenderer.SetPositions(points);
     }
 
-    private void SetTrajectoryIndicatorColor()
+    IEnumerator TrajectoryIndicatorFadeIn()
     {
-        Color color = new Color(255f, 255f, 255f);
-        lineRenderer.materials[0].SetColor("_TintColor", color);
-    }
-
-    IEnumerator TrajectoryIndicatorFadeOut()
-    {
-        float fadeOutSpeed = 2f;
         float elapsedTime = 0;
 
-        while (elapsedTime < fadeOutSpeed)
+        Gradient gradient = new Gradient();
+
+        while (elapsedTime < TrajectoryIndicatorFadeInSpeed)
         {
-            Color color = Color.Lerp(new Color(0.5f, 0.5f, 0.5f, 0.5f), new Color(0f, 0f, 0f, 0f), elapsedTime);
-            lineRenderer.materials[0].SetColor("_TintColor", color);
+            gradient.SetKeys(lineRenderer.colorGradient.colorKeys,
+                 new GradientAlphaKey[] { new GradientAlphaKey(elapsedTime / TrajectoryIndicatorFadeInSpeed, 1f) }
+             );
+            lineRenderer.colorGradient = gradient;
+
             elapsedTime += Time.deltaTime;
 
             yield return null;
         }
     }
 
-    private Vector3 GetRotation() => 
-        Quaternion.LookRotation(targetPosition - transform.position).eulerAngles;
+    IEnumerator TrajectoryIndicatorFadeOut()
+    {
+        float elapsedTime = 0;
+
+        Gradient gradient = new Gradient();
+
+        while (elapsedTime < TrajectoryIndicatorFadeOutSpeed)
+        {
+            gradient.SetKeys (lineRenderer.colorGradient.colorKeys,
+                 new GradientAlphaKey[] { new GradientAlphaKey(1 - (elapsedTime / TrajectoryIndicatorFadeOutSpeed), 1f) }
+             );
+            lineRenderer.colorGradient = gradient;
+
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        isReady = true;
+    }
+
+    private void SetTargetPosition()
+    {
+        targetPosition = target.position + offset;
+    }
+
+    private void CheckTargetDistance(Vector3 target, out bool isShooting) =>
+        isShooting = Vector3.Distance(transform.position, target) <= aggroRange;
+
+    private Vector3 GetLookRotation() => 
+        Quaternion.LookRotation(targetPosition - transform.parent.position).eulerAngles;
 
     private void LookTarget()
     {
-        Vector3 rotation = GetRotation();
+        if (lockRotation) return;
+        Vector3 rotation = GetLookRotation();
         rotation.x = 0;
         rotation.z = 0;
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * rotationSpeed);
+        transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, Quaternion.Euler(rotation), rotationSpeed * Time.deltaTime);
     }
 }

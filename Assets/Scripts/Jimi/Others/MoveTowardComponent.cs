@@ -1,30 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/*
+ * Note: La position du target est calculée une seule fois. -> Ne change pas. -> Est fixe.
+ */
 public class MoveTowardComponent : MonoBehaviour
 {
     [SerializeField] Transform target;
     [SerializeField] Vector3 offset;
-    public Vector3 targetPosition;
+    [SerializeField] float speed;
+    public Vector3 TargetPosition { get; private set; }
 
-    [SerializeField] float bulletSpeed;
-    [SerializeField] Vector3 bulletRotationPerSecond;
-    [SerializeField] Space spaceRotation;
+    private bool isMoving;
+
+    private void Start()
+    {
+        Init();
+    }
 
     private void OnEnable()
     {
-        targetPosition = target.position + offset;
+        Init();
+    }
+
+    private void Init()
+    {
+        SetTargetPosition();
+        StartMoving();
     }
 
     private void Update()
     {
-        MoveTowardTarget();
+        if (isMoving)
+            Move();
     }
 
-    private void MoveTowardTarget()
+    public void StartMoving()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, bulletSpeed / 100f);
-        transform.Rotate(bulletRotationPerSecond * Time.deltaTime, spaceRotation);
+        isMoving = true;
+    }
+
+    public void StopMoving()
+    {
+        isMoving = false;
+    }
+
+    private void Move()
+    {
+        transform.position = Vector3.Lerp(transform.position, TargetPosition, speed * Time.deltaTime);
+    }
+
+    public float DistanceFromTarget() =>
+        Vector3.Distance(transform.position, TargetPosition);
+
+    private void SetTargetPosition()
+    {
+        TargetPosition = target.position + offset;
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class DisableOverTimeComponent : MonoBehaviour
 {
-    public float timeBeforeDisable = 10f;
+    [SerializeField] float timeBeforeDisable = 10f;
 
     private void OnEnable()
     {

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 public class ScalePulsateComponent : MonoBehaviour
 {
     [SerializeField] float maxDeltaScale;
     [SerializeField] float stepPerSecond;
+
     private Vector3 scaleOriginal;
     private Vector3 transformations;
     private float maxX, maxY, maxZ;
