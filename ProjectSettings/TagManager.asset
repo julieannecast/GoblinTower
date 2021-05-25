@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Bullet
   - Wall
+  - Ouille
+  - Chest
   layers:
   - Default
   - TransparentFX

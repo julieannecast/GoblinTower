@@ -18584,6 +18584,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spiky
       objectReference: {fileID: 0}
+    - target: {fileID: 6440562382549516449, guid: 3bd6f07c36d4a904b86ce225e3642a58, type: 3}
+      propertyPath: m_TagString
+      value: Ouille
+      objectReference: {fileID: 0}
     - target: {fileID: 6440562382549516450, guid: 3bd6f07c36d4a904b86ce225e3642a58, type: 3}
       propertyPath: startTarget
       value: 

@@ -602,6 +602,8 @@ GameObject:
   - component: {fileID: 6453731631653028458}
   - component: {fileID: 6781009011108130504}
   - component: {fileID: 6781009011108130506}
+  - component: {fileID: 824099339670144557}
+  - component: {fileID: 4731964878660743349}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Untagged
@@ -705,6 +707,35 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
   _cam: {fileID: 0}
+--- !u!114 &824099339670144557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5970526351492503760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1ba7e7171f6bb3459a58bddf5ac479c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VieMax: 3
+  healthPanel: {fileID: 0}
+  pointImage: {fileID: 1546201709842160250, guid: a81d8d487df41e749b615daac672b7a6, type: 3}
+--- !u!136 &4731964878660743349
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5970526351492503760}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2
+  m_Height: 6
+  m_Direction: 1
+  m_Center: {x: 0, y: 3.5, z: 0}
 --- !u!1 &6038613333088363816
 GameObject:
   m_ObjectHideFlags: 0
