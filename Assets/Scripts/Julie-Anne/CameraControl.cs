@@ -11,6 +11,7 @@ public class CameraControl : MonoBehaviour
     private bool _isRotating;
     private float _angleRestant;
     private int _delta;
+    public float futureHeight;
     private bool _coinUpdated;
     private const float Speed = 180f;
 
@@ -20,6 +21,7 @@ public class CameraControl : MonoBehaviour
         SetCallbacks();
         moveClockwise.Enable();
         moveCounterclockwise.Enable();
+        futureHeight = transform.position.y;
     }
     private void SetCallbacks()
     {
@@ -47,12 +49,12 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
-        if(_isRotating)
+        if (_isRotating)
         {
             _angleRestant -= Speed * Time.deltaTime;
             if (_angleRestant > 0)
             {
-                if(_angleRestant < 45 && !_coinUpdated)
+                if (_angleRestant < 45 && !_coinUpdated)
                 {
                     coin = (4 + ((coin + _delta) % 4)) % 4;
                     _coinUpdated = true;
@@ -64,6 +66,9 @@ public class CameraControl : MonoBehaviour
                 _isRotating = false;
             }
         }
+        var futurePosition = new Vector3(transform.position.x, futureHeight, transform.position.z);
+        transform.position = Vector3.MoveTowards(transform.position, futurePosition, Time.deltaTime * 3);
+    
     }
     private void OnDestroy()
     {

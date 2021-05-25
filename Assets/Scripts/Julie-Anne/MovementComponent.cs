@@ -44,6 +44,8 @@ public class MovementComponent : MonoBehaviour
             if (_tempsMouvement >= 1.0f)
             {
                 transform.position = _destination;
+                var positionCamera = _cam.gameObject.transform.position;
+                _cam.futureHeight = _destination.y + 4;
                 _isMoving = false;
                 _anim.SetBool("isMoving", false);
             }
