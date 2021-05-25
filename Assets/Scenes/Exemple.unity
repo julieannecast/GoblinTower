@@ -18534,7 +18534,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4770896920927705888, guid: 3bd6f07c36d4a904b86ce225e3642a58, type: 3}
       propertyPath: distanceToGroundBeforeJump
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6440562382549516448, guid: 3bd6f07c36d4a904b86ce225e3642a58, type: 3}
       propertyPath: m_LocalPosition.x
