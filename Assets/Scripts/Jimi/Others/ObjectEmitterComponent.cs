@@ -22,11 +22,6 @@ public class ObjectEmitterComponent : MonoBehaviour
         Init();
     }
 
-    private void OnEnable()
-    {
-        Init();
-    }
-
     private void Init()
     {
         isEmitting = false;

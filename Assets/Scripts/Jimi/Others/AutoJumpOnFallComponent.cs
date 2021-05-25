@@ -14,6 +14,7 @@ public class AutoJumpOnFallComponent : MonoBehaviour
     [SerializeField] float jumpForce;
     [SerializeField] float distanceToGroundBeforeJump;
     [SerializeField] UnityEvent CallbackOnJump;
+    [SerializeField] LayerMask IgnoredLayer;
 
     private bool jumped;
 
@@ -39,7 +40,7 @@ public class AutoJumpOnFallComponent : MonoBehaviour
     {
         var ray = new Ray(transform.position, Vector3.down);
 
-        if (Physics.Raycast(ray, distanceToGroundBeforeJump))
+        if (Physics.Raycast(ray, distanceToGroundBeforeJump, ~IgnoredLayer))
         {
             jumped = false;
             return true;

@@ -721,6 +721,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VieMax: 3
   healthPanel: {fileID: 0}
+  deathPanel: {fileID: 0}
   pointImage: {fileID: 1546201709842160250, guid: a81d8d487df41e749b615daac672b7a6, type: 3}
 --- !u!136 &4731964878660743349
 CapsuleCollider:
@@ -733,9 +734,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 2
-  m_Height: 6
+  m_Height: 5.5
   m_Direction: 1
-  m_Center: {x: 0, y: 3.5, z: 0}
+  m_Center: {x: 0, y: 3, z: 0}
 --- !u!1 &6038613333088363816
 GameObject:
   m_ObjectHideFlags: 0
