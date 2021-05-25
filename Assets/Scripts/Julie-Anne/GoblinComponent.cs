@@ -27,15 +27,14 @@ public class GoblinComponent : MonoBehaviour, IDamageable
     public void TakeDamage(int damage)
     {
         Health -= damage;
-        if (Health > 0)
+
+        for (int i = 0; i < damage && healthPanel.childCount > 0; i++)
         {
-            for (int i = 0; i < damage; i++)
-            {
-                var image = healthPanel.GetChild(healthPanel.childCount - 1);
-                Destroy(image.gameObject);
-            }
+            var image = healthPanel.GetChild(healthPanel.childCount - 1);
+            Destroy(image.gameObject);
         }
-        else
+
+        if (Health <= 0)
         {
             Destroy(healthPanel.GetChild(0).gameObject);
             deathPanel.gameObject.SetActive(true);
@@ -46,11 +45,13 @@ public class GoblinComponent : MonoBehaviour, IDamageable
     public void ChangeColorOnHit()
     {
     }
-    private void OnCollisionEnter(Collision collision)
+
+    private void Update()
     {
-        if(collision.gameObject.CompareTag("Bullet") || collision.gameObject.CompareTag("Ouille"))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
             TakeDamage(1);
+            Debug.Log("hit");
         }
         else if (collision.gameObject.CompareTag("Chest"))
         {

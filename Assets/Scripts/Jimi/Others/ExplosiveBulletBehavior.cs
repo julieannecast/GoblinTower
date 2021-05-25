@@ -14,9 +14,12 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
     private ScalePulsateComponent scalePulsateComponent;
     private DisableOverTimeComponent disableOverTimeComponent;
 
+    [SerializeField] int damage;
     [SerializeField] float distanceMinToDetonate;
     [SerializeField] float timeBeforeExplosion; //Secondes
     private bool detonated;
+    private bool exploded;
+    private bool damaged;
     [SerializeField] ParticleSystem particleSys;
 
     [SerializeField] GameObject projectilePieces;
@@ -32,6 +35,8 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
     private void OnEnable()
     {
         detonated = false;
+        exploded = false;
+        damaged = false;
         projectilePieces.SetActive(true);
     }
 
@@ -73,6 +78,7 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
 
     private void Explode()
     {
+        exploded = true;
         spiningComponent.StopSpining();
         particleSys.Play();
         projectilePieces.SetActive(false);
@@ -81,5 +87,14 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
     private void Die()
     {
         gameObject.SetActive(false);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.tag == "Player" && exploded && !damaged)
+        {
+            other.GetComponent<HitPointsComponent>().TakeDamage(damage);
+            damaged = true;
+        }
     }
 }
