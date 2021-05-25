@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -80,7 +81,7 @@ public class MovementComponent : MonoBehaviour
 
     private bool DeplacementValide(Vector3 origine, ref Vector3 destination)
     {
-        var hauteurs = GetTabDifferenceHauteur(origine, destination);
+        var hauteurs = GetTabDifferenceHauteur(origine, destination, 1).Except(GetTabDifferenceHauteur(origine, destination, -1));
 
         foreach (var hauteur in hauteurs)
         {
@@ -92,7 +93,7 @@ public class MovementComponent : MonoBehaviour
             else if (hauteur < 0)
             {
                 var direction = destination - origine;
-                var hauteursLoin = GetTabDifferenceHauteur(origine, origine + direction * 2);
+                var hauteursLoin = GetTabDifferenceHauteur(origine, origine + direction * 2, 1).Except(GetTabDifferenceHauteur(origine, origine+direction*2, -1));
                 foreach (var hauteurLoin in hauteursLoin)
                 {
                     if (hauteurLoin == 0)
@@ -112,9 +113,9 @@ public class MovementComponent : MonoBehaviour
     }
 
     //Trouver la différence de hauteur entre la position du joueur et la prochaine position
-    private int[] GetTabDifferenceHauteur(Vector3 origine, Vector3 destination)
+    private int[] GetTabDifferenceHauteur(Vector3 origine, Vector3 destination, int direction)
     {
-        var hits = Physics.RaycastAll(new Vector3(destination.x, top, destination.z), Vector3.down);
+        var hits = Physics.RaycastAll(new Vector3(destination.x, top * direction, destination.z), Vector3.down * direction);
         int[] differences = new int[hits.Length];
         for(int i = 0; i < differences.Length; i++) 
         { 
