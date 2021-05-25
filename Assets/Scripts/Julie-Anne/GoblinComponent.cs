@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class HitPointsComponent : MonoBehaviour, IDamageable
+public class GoblinComponent : MonoBehaviour, IDamageable
 {
     public int VieMax;
 
@@ -11,6 +12,8 @@ public class HitPointsComponent : MonoBehaviour, IDamageable
     public RectTransform healthPanel;
     public RectTransform deathPanel;
     public RectTransform pointImage;
+    public string nextLevel;
+
     private void Awake()
     {
         Health = VieMax;
@@ -34,6 +37,7 @@ public class HitPointsComponent : MonoBehaviour, IDamageable
         }
         else
         {
+            Destroy(healthPanel.GetChild(0).gameObject);
             deathPanel.gameObject.SetActive(true);
             gameObject.SetActive(false);
         }
@@ -47,6 +51,10 @@ public class HitPointsComponent : MonoBehaviour, IDamageable
         if(collision.gameObject.CompareTag("Bullet") || collision.gameObject.CompareTag("Ouille"))
         {
             TakeDamage(1);
+        }
+        else if (collision.gameObject.CompareTag("Chest"))
+        {
+            SceneManager.LoadScene(nextLevel);
         }
     }
 }
