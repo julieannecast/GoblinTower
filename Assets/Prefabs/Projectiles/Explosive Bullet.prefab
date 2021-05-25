@@ -742,6 +742,7 @@ GameObject:
   - component: {fileID: 4732644203494159332}
   - component: {fileID: 4732644203494159335}
   - component: {fileID: 4732644203494159331}
+  - component: {fileID: 1443802165}
   m_Layer: 0
   m_Name: Explosive Bullet
   m_TagString: Bullet
@@ -758,7 +759,7 @@ Transform:
   m_GameObject: {fileID: 4732644203494159325}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5, y: 5, z: -7.11}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4732644203579861855}
   - {fileID: 6254335632235552583}
@@ -778,7 +779,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceMinToDetonate: 3
-  timeBeforeExplosion: 2
+  timeBeforeExplosion: 4
   particleSys: {fileID: 2817927322488404144}
   projectilePieces: {fileID: 4732644203579861854}
 --- !u!114 &4732644203494159332
@@ -808,7 +809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   offset: {x: 0, y: 1.5, z: 0}
-  speed: 0
+  speed: 1
 --- !u!114 &4732644203494159331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,6 +825,20 @@ MonoBehaviour:
   maxDeltaScale: 0.7
   stepPerSecond: 0.5
   isPulsing: 0
+--- !u!114 &1443802165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732644203494159325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a793cc33a68b4f346be9fb761b8ee19f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationPerSecond: {x: 90, y: 90, z: 90}
+  space: 0
 --- !u!1 &4732644203579861854
 GameObject:
   m_ObjectHideFlags: 0

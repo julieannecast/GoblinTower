@@ -114,7 +114,7 @@ public class MovementComponent : MonoBehaviour
     //Trouver la différence de hauteur entre la position du joueur et la prochaine position
     private int[] GetTabDifferenceHauteur(Vector3 origine, Vector3 destination)
     {
-        var hits = Physics.RaycastAll(new Vector3(destination.x, top, destination.z), Vector3.down);
+        var hits = Physics.RaycastAll(new Vector3(destination.x, top, destination.z), Vector3.down, 100f, LayerMask.GetMask("Ground"));
         int[] differences = new int[hits.Length];
         for(int i = 0; i < differences.Length; i++) 
         { 
