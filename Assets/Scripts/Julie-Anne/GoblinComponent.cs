@@ -48,12 +48,11 @@ public class GoblinComponent : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            TakeDamage(1);
-            Debug.Log("hit");
-        }
-        else if (collision.gameObject.CompareTag("Chest"))
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Chest") && nextLevel != "")
         {
             SceneManager.LoadScene(nextLevel);
         }

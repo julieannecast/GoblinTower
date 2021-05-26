@@ -93,7 +93,7 @@ public class ExplosiveBulletBehavior : MonoBehaviour, IPoolable
     {
         if (other.tag == "Player" && exploded && !damaged)
         {
-            other.GetComponent<HitPointsComponent>().TakeDamage(damage);
+            other.GetComponent<GoblinComponent>().TakeDamage(damage);
             damaged = true;
         }
     }

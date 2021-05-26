@@ -11,6 +11,7 @@ public class CameraControl : MonoBehaviour
     private bool _isRotating;
     private float _angleRestant;
     private int _delta;
+    public float heightAdjust;
     public float futureHeight;
     private bool _coinUpdated;
     private const float Speed = 180f;

@@ -10,7 +10,7 @@ public class SpikyBehavior : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            other.GetComponent<HitPointsComponent>().TakeDamage(damage);
+            other.GetComponent<GoblinComponent>().TakeDamage(damage);
         }
         else
         {

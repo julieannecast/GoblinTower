@@ -45,7 +45,7 @@ public class MovementComponent : MonoBehaviour
             {
                 transform.position = _destination;
                 var positionCamera = _cam.gameObject.transform.position;
-                _cam.futureHeight = _destination.y + 4;
+                _cam.futureHeight = _destination.y + _cam.heightAdjust;
                 _isMoving = false;
                 _anim.SetBool("isMoving", false);
             }
