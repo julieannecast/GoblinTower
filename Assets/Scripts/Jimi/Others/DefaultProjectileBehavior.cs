@@ -10,6 +10,10 @@ public class DefaultProjectileBehavior : MonoBehaviour, IPoolable
     {
         associatedPool.PutObject(gameObject);
     }
+    private void OnEnable()
+    {
+        damaged = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {

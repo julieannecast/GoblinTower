@@ -421,7 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e3a264614c55547a30675aa3bb9e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: Julie-Anne
+  sceneName: Niveau1
 --- !u!1001 &253376155
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -667,7 +667,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e3a264614c55547a30675aa3bb9e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: Exemple
+  sceneName: Niveau2
 --- !u!114 &462809219
 MonoBehaviour:
   m_ObjectHideFlags: 0

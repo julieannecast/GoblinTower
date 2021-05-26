@@ -12,6 +12,7 @@ public class GoblinComponent : MonoBehaviour, IDamageable
     public RectTransform healthPanel;
     public RectTransform deathPanel;
     public RectTransform pointImage;
+    public RectTransform winPanel;
     public string nextLevel;
 
     private void Awake()
@@ -42,19 +43,17 @@ public class GoblinComponent : MonoBehaviour, IDamageable
         }
     }
 
-    public void ChangeColorOnHit()
-    {
-    }
-
-    private void Update()
-    {
-    }
-
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("trigger");
         if (other.CompareTag("Chest") && nextLevel != "")
         {
             SceneManager.LoadScene(nextLevel);
+        }
+        else if (other.CompareTag("Win"))
+        {
+            winPanel.gameObject.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
 }
