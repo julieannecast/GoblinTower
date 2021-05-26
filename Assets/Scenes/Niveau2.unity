@@ -17054,6 +17054,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1443068103}
+    - target: {fileID: 3394311095859508643, guid: f74a4299ca59c2d4aafc0ad2a54d5026, type: 3}
+      propertyPath: aggroRange
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8577218283868836573, guid: f74a4299ca59c2d4aafc0ad2a54d5026, type: 3}
       propertyPath: objectPool
       value: 
