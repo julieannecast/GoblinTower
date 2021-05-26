@@ -2033,7 +2033,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5895515240982116897, guid: f1def345f4661a94d9566ddc6fec1506, type: 3}
       propertyPath: m_IsTrigger
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6216644441677255378, guid: f1def345f4661a94d9566ddc6fec1506, type: 3}
       propertyPath: m_Name
